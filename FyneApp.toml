@@ -1,0 +1,14 @@
+[Details]
+Name = "timesplit"
+ID = "timesplit"
+Version = "1.0.0"
+Build = 6
+
+[LinuxAndBSD]
+GenericName = "Web Browser"
+Categories = ["Network"]
+Comment = "View sites on the Internet"
+Keywords = ["browser", "web"]
+
+[Migrations]
+fyneDo = true
