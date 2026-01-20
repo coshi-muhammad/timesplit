@@ -1,14 +1,14 @@
 [Details]
 Name = "timesplit"
 ID = "timesplit"
-Version = "1.0.0"
+Version = "0.0.1"
 Build = 6
 
 [LinuxAndBSD]
-GenericName = "Web Browser"
-Categories = ["Network"]
-Comment = "View sites on the Internet"
-Keywords = ["browser", "web"]
+GenericName = "TimeSplit"
+Categories = ["Time managment"]
+Comment = "Divide your time into pre planed sections"
+Keywords = ["orginization","time","management"]
 
 [Migrations]
 fyneDo = true
