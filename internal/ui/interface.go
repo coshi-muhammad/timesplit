@@ -1,7 +1,10 @@
 package ui
 
-import "fyne.io/fyne/v2"
+import (
+	"fyne.io/fyne/v2"
+)
 
+type ShowView func(*UiRouter)
 type View interface {
 	GetCanvas() fyne.CanvasObject
 }

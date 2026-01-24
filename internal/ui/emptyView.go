@@ -7,8 +7,10 @@ import (
 	"github.com/coshi-muhammd/timesplit/internal/core"
 )
 
+var _ View = (*EmptyView)(nil)
+
 type EmptyView struct {
-	logic        core.Logic
+	logic        core.EmptyLogic
 	router       *UiRouter
 	button       *widget.Button
 	emptySection *fyne.Container
@@ -16,7 +18,8 @@ type EmptyView struct {
 
 func NewEmptyView(l core.Logic, r *UiRouter) *EmptyView {
 	button := widget.NewButton("add split", func() {
-		r.ShowForm()
+		popup := NewSplitDialauge(r)
+		popup.Show()
 	})
 	container := container.NewStack(button)
 	return &EmptyView{logic: l, router: r, button: button, emptySection: container}
