@@ -1,0 +1,59 @@
+name: Package and Release Fyne App
+
+on:
+  push:
+    tags:
+      - 'v*' # Triggers on tags starting with v (e.g., v1.0.1)
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: [linux, windows]
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24' # Adjust to your Go version
+
+      - name: Install fyne-cross
+        run: go install github.com/fyne-io/fyne-cross@latest
+
+      - name: Package App
+        run: |
+          # Use fyne-cross to build for the matrix target
+          # Replace 'com.example.myapp' with your actual App ID
+          fyne-cross ${{ matrix.target }} -app-id io.github.coshi-muhammad.timesplit ./cmd/timesplit/
+
+      - name: Prepare Artifacts
+        run: |
+          # Fyne-cross puts files in the 'fyne-cross/dist' folder
+          cd fyne-cross/dist/${{ matrix.target }}-amd64
+          zip -r ../../../${{ matrix.target }}-build.zip .
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.target }}-binary
+          path: ${{ matrix.target }}-build.zip
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            linux-binary/linux-build.zip
+            windows-binary/windows-build.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
