@@ -13,6 +13,9 @@ Because this project uses CGO, you must have a C compiler and graphics developme
 
         Linux: Graphics headers (e.g., libgl1-mesa-dev, xorg-dev on Ubuntu).
 ### 2. Installation
+you can use one of the taged releases found in [releases]( "github.com/coshi-muhammd/timesplit/internal/core")
+
+If you want to build from source run the following commands
 
 Clone the repository and fetch the dependencies:
 
@@ -21,12 +24,17 @@ git clone https://github.com/coshi-muhammad/timesplit.git
 cd yourproject
 go mod tidy
 ```
-### 3. Running the App
 
 To run the application immediately:
    ```bash
-    go run .
+    go run ./cmd/timesplit
    ```
+
+Or build an executable:
+```bash
+    go build ./cmd/timesplit
+```
+
 
 ## 📝 License
 Distributed under the MIT License.
