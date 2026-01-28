@@ -3,3 +3,5 @@ reminders.c
 test_assets/
 main
 *.json
+fyne-cross/
+*.png
