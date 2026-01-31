@@ -11,7 +11,7 @@ import (
 )
 
 type UiRouter struct {
-	Logic    core.RouterLogic
+	Logic    *logic.RouterService
 	isMobile bool
 	App      fyne.App
 	Window   fyne.Window
@@ -19,8 +19,8 @@ type UiRouter struct {
 	View     View
 }
 
-func NewRouter(l core.RouterLogic, w fyne.Window) *UiRouter {
-	r := &UiRouter{Logic: l, Window: w}
+func NewRouter(l *logic.RouterService, a fyne.App, w fyne.Window) *UiRouter {
+	r := &UiRouter{Logic: l, App: a, Window: w}
 	r.Logic.LoadSplits()
 	//TODO: change this to use the splitservice
 	r.Sidebar = NewSideBar(r)

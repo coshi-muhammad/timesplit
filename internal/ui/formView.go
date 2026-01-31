@@ -8,10 +8,10 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
-
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
+	"github.com/coshi-muhammd/timesplit/internal/core"
 	"github.com/coshi-muhammd/timesplit/internal/logic"
 )
 
@@ -21,7 +21,7 @@ type FormView struct {
 	form                *widget.Form
 	split_widget        *SplitWidget
 	color_dialauge      *dialog.ColorPickerDialog
-	atachement_dialauge *dialog.FileDialog
+	atachement_dialauge *newAtachementDialog
 	atachement_list     *widget.List
 	items               map[string]*widget.FormItem
 }
@@ -55,6 +55,26 @@ func (e *timeEntry) TypedRune(r rune) {
 
 	e.Entry.TypedRune(r)
 }
+func (e *timeEntry) TypedKey(k *fyne.KeyEvent) {
+	if k.Name == fyne.KeyReturn || k.Name == fyne.KeyEscape {
+		length := len(e.Text)
+		// Your logic: if they typed "1", make it "01:"
+		if length == 1 || length == 4 || length == 7 {
+			r := rune(e.Entry.Text[length-1])
+			e.TypedKey(&fyne.KeyEvent{Name: fyne.KeyBackspace})
+			e.Entry.TypedRune('0')
+			e.Entry.TypedRune(r)
+		}
+		newLen := len(e.Text)
+		if newLen == 2 || newLen == 5 {
+			e.Entry.TypedRune(':')
+		}
+		return
+	}
+
+	// Pass other keys (like arrows, backspace) to the default Entry handler
+	e.Entry.TypedKey(k)
+}
 
 // this throws a compilation error if the struct doesnt follow the interface
 var _ View = (*FormView)(nil)
@@ -85,16 +105,17 @@ func (fv *FormView) NewForm() {
 	}),
 	)
 
-	fv.atachement_dialauge = dialog.NewFileOpen(func(reader fyne.URIReadCloser, err error) {
-		if err == nil {
-			fv.logic.Temp_section.Atachements =
-				append(fv.logic.Temp_section.Atachements, reader.URI().Path())
-			fv.atachement_list.Refresh()
-		}
-	}, fv.router.Window)
-	fv.items["Atachement"] = widget.NewFormItem("Atachements", widget.NewButton("Add Atachement", func() {
-		fv.atachement_dialauge.Show()
-	}),
+	fv.atachement_dialauge = NewAtachementDialog(fv.router)
+	fv.items["Atachement"] = widget.NewFormItem("Atachements",
+		widget.NewButton("Add Atachement", func() {
+			fv.atachement_dialauge.dialog.SetOnClosed(func() {
+				fmt.Println(fv.atachement_dialauge.temp.Name)
+				fv.logic.Temp_section.Atachements = append(fv.logic.Temp_section.Atachements,
+					fv.atachement_dialauge.temp)
+				fv.atachement_list.Refresh()
+			})
+			fv.atachement_dialauge.Show()
+		}),
 	)
 	fv.atachement_list = widget.NewList(
 		func() int {
@@ -112,7 +133,7 @@ func (fv *FormView) NewForm() {
 			lbl := hbox.Objects[0].(*widget.Label)
 			btn := hbox.Objects[2].(*widget.Button)
 
-			lbl.SetText(fv.logic.Temp_section.Atachements[i])
+			lbl.SetText(fv.logic.Temp_section.Atachements[i].Name)
 
 			btn.OnTapped = func() {
 				fv.logic.Temp_section.Atachements =
@@ -152,9 +173,10 @@ func (fv *FormView) GetCanvas() fyne.CanvasObject {
 		fv.items["end"].Widget.(*timeEntry).Text = ""
 		fv.items["description"].Widget.(*widget.Entry).Text = ""
 		fv.logic.Temp_section.Color = color.RGBA{}
-		fv.logic.Temp_section.Atachements = make([]string, 0)
+		fv.logic.Temp_section.Atachements = make([]core.Atachement, 0)
 		fv.split_widget.Refresh()
 		fv.form.Refresh()
+		fv.atachement_list.Refresh()
 	})
 	submit := widget.NewButton("Submit", func() {
 		err := fv.logic.Submit()

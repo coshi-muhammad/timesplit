@@ -205,12 +205,12 @@ func (sr *SplitRenderer) Layout(size fyne.Size) {
 			float32(core.Max_time)
 		fmt.Println(start_pos)
 		if section.section.Start_t < 5 {
-			section.background.TopLeftCornerRadius = 3
-			section.background.TopRightCornerRadius = 3
+			section.background.TopLeftCornerRadius = 15
+			section.background.TopRightCornerRadius = 15
 		}
 		if section.section.End_t > core.Max_time-5 {
-			section.background.BottomLeftCornerRadius = 3
-			section.background.BottomRightCornerRadius = 3
+			section.background.BottomLeftCornerRadius = 15
+			section.background.BottomRightCornerRadius = 15
 		}
 		section.container.Move(fyne.NewPos(0, start_pos))
 		section.container.Resize(fyne.NewSize(size.Width, height))
@@ -223,6 +223,10 @@ func (sr *SplitRenderer) Layout(size fyne.Size) {
 		}
 		position := size.Height * float32(time) /
 			float32(core.Max_time)
+		if position < 5 || position > size.Height-5 {
+			timestamp.centered_label.Hide()
+			timestamp.line.Hide()
+		}
 		timestamp.centered_label.Move(fyne.NewPos(size.Width/2, position))
 		timestamp.line.Move(fyne.NewPos(0, position))
 		timestamp.line.Resize(fyne.NewSize(size.Width, 2))

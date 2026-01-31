@@ -35,15 +35,19 @@ type DayLogic interface {
 type EmptyLogic interface {
 	Logic
 }
-
+type Atachement struct {
+	A_type string `json:"type"`
+	Name   string `json:"name"`
+	Uri    string `json:"uri"`
+}
 type Section struct {
-	Id          uuid.UUID  `json:"id"`
-	Title       string     `json:"title"`
-	Start_t     uint64     `json:"start"`
-	End_t       uint64     `json:"end"`
-	Color       color.RGBA `json:"color"`
-	Description string     `json:"description"`
-	Atachements []string   `json:"Atachements"`
+	Id          uuid.UUID    `json:"id"`
+	Title       string       `json:"title"`
+	Start_t     uint64       `json:"start"`
+	End_t       uint64       `json:"end"`
+	Color       color.RGBA   `json:"color"`
+	Description string       `json:"description"`
+	Atachements []Atachement `json:"Atachements"`
 }
 
 type Split struct {
@@ -55,7 +59,7 @@ type Split struct {
 
 // TODO: when making the day/week view make it that this thing decieds what is the active split on start up
 type Configuration struct {
-	Active_Split_id uuid.UUID
+	Active_Split_id uuid.UUID `json:"active_split_id"`
 }
 
 type AppState struct {

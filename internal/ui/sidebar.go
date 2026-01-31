@@ -43,7 +43,7 @@ func NewSideBar(r *UiRouter) *SideBar {
 			co.(*widget.Button).OnTapped = func() {
 				r.Logic.SetActiveSplit(split.Id)
 				r.Logic.GetState().Config.Active_Split_id = split.Id
-				daylogic := logic.NewDayService(r.Logic.(*logic.RouterService),
+				daylogic := logic.NewDayService(r.Logic,
 					logic.WrapSplit(r.Logic.GetActiveSplit()))
 				r.ShowDay(daylogic)
 			}

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"time"
 
 	"fyne.io/fyne/v2/app"
@@ -12,13 +13,15 @@ import (
 
 func main() {
 	a := app.New()
-	w := a.NewWindow("form")
+	w := a.NewWindow("Time split")
 	//TODO: posibly make an initilization function to result in a better and cleaner main function
 	router_logic := logic.NewRouterService(core.AppState{
 		Split_List: make(map[uuid.UUID]*core.Split),
 	})
-	router := ui.NewRouter(router_logic, w)
+	router := ui.NewRouter(router_logic, a, w)
+	router.Logic.LoadConfig()
 	if router.GetState().Config.Active_Split_id != uuid.Nil {
+		fmt.Println(router.GetState().Config)
 		router.Logic.SetActiveSplit(router.GetState().Config.Active_Split_id)
 		daylogic := logic.NewDayService(router_logic,
 			logic.WrapSplit(router.Logic.GetActiveSplit()))
@@ -41,5 +44,5 @@ func main() {
 	//TODO: when you make the day/week format make it the default
 	//and which one depends in the wekk flag <half done>
 	w.ShowAndRun()
-
+	router.Logic.StoreConfig()
 }

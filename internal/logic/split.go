@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"slices"
 	"time"
 
@@ -66,7 +67,7 @@ func (sp SplitService) Store() error {
 	if err != nil {
 		return err
 	}
-	err = os.WriteFile(sp.Title+".json", json, 0644)
+	err = os.WriteFile(filepath.Join(GetDataDirectory(), sp.Title+".json"), json, 0644)
 	if err != nil {
 		return err
 	}

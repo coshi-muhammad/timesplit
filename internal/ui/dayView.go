@@ -2,9 +2,7 @@ package ui
 
 import (
 	"fmt"
-	"os"
-	"path/filepath"
-	"strings"
+	"net/url"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
@@ -25,19 +23,6 @@ type DayView struct {
 	sectionInfo     *fyne.Container
 }
 
-func formatTarget(input string) string {
-	if _, err := os.Stat(input); err == nil {
-		abs, _ := filepath.Abs(input)
-		return "file://" + filepath.ToSlash(abs)
-	}
-
-	if !strings.Contains(input, "://") {
-		return "https://" + input
-	}
-
-	return input
-}
-
 func (dv *DayView) SetSectionInfo() {
 	dv.Logic.SetVisibleSection()
 	active := widget.NewButton("Make active split", func() {
@@ -55,27 +40,25 @@ func (dv *DayView) SetSectionInfo() {
 	}
 	atatchment_label := widget.NewLabel("Atachement list")
 	//TODO: refactor this later to use the data binding api
-	// dv.atachement_list = widget.NewList(
-	// 	func() int {
-	// 		return len(dv.Logic.Visible_section.Atachements)
-	// 	},
-	// 	func() fyne.CanvasObject {
-	// 		return widget.NewButton("template", func() {})
-	// 	},
-	// 	func(i widget.ListItemID, o fyne.CanvasObject) {
-	// 		atatchment := dv.Logic.Visible_section.Atachements[i]
-	// 		atatchment_link := formatTarget(atatchment)
-	// 		o.(*widget.Button).SetText(atatchment)
-	// 		o.(*widget.Button).OnTapped = func() {
-	// 			url, _ := url.Parse(atatchment_link)
-	// 			dv.router.App.OpenURL(url)
-	// 		}
-	// 	},
-	// )
-	dv.atachement_list = &widget.List{}
-
-	dv.sectionInfo = container.NewBorder(active, dv.atachement_list, nil, nil,
-		container.NewVBox(dv.title, dv.time_range, dv.description, atatchment_label))
+	dv.atachement_list = widget.NewList(
+		func() int {
+			return len(dv.Logic.Visible_section.Atachements)
+		},
+		func() fyne.CanvasObject {
+			return widget.NewButton("template", func() {})
+		},
+		func(i widget.ListItemID, o fyne.CanvasObject) {
+			atatchment := dv.Logic.Visible_section.Atachements[i]
+			o.(*widget.Button).SetText(atatchment.Name)
+			o.(*widget.Button).OnTapped = func() {
+				url, _ := url.Parse(atatchment.Uri)
+				dv.router.App.OpenURL(url)
+			}
+		},
+	)
+	dv.sectionInfo = container.NewBorder(container.NewVBox(active, dv.title,
+		dv.time_range, dv.description, atatchment_label),
+		nil, nil, nil, dv.atachement_list)
 }
 
 func NewDayView(l *logic.DayService, r *UiRouter) *DayView {
@@ -104,4 +87,5 @@ func (dv *DayView) SetVisibleSection() {
 	dv.time_range.Refresh()
 	dv.description.Text = dv.Logic.Visible_section.Description
 	dv.description.Refresh()
+	dv.atachement_list.Refresh()
 }

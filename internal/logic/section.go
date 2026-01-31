@@ -32,7 +32,7 @@ func DecodeTime(time_string string) (uint64, error) {
 }
 
 func NewSection(title, start, end, description string,
-	color color.RGBA, atachements []string) (*SectionService, error) {
+	color color.RGBA, atachements []core.Atachement) (*SectionService, error) {
 	start_t, err := DecodeTime(start)
 	if err != nil {
 		return nil, err
